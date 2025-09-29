@@ -37,6 +37,35 @@ const pool = mariadb.createPool({
   connectionLimit: 5,
 });
 
+/**
+ * @swagger
+ * /agents:
+ *   get:
+ *     summary: Get all agents
+ *     description: Returns a list of all agents with their code, name, working area, and commission.
+ *     responses:
+ *       200:
+ *         description: A list of agents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   AGENT_CODE:
+ *                     type: string
+ *                     example: "A001"
+ *                   AGENT_NAME:
+ *                     type: string
+ *                     example: "John Doe"
+ *                   WORKING_AREA:
+ *                     type: string
+ *                     example: "New York"
+ *                   COMMISSION:
+ *                     type: number
+ *                     example: 0.15
+ */
 app.get('/agents', async (req, res) => {
     const conn = await pool.getConnection();
     const rows = await conn.query(
@@ -46,6 +75,32 @@ app.get('/agents', async (req, res) => {
     res.json(rows);
 });
 
+/**
+ * @swagger
+ * /companies:
+ *   get:
+ *     summary: Get all companies
+ *     description: Returns a list of all companies with their ID, name, and city.
+ *     responses:
+ *       200:
+ *         description: A list of companies
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   COMPANY_ID:
+ *                     type: integer
+ *                     example: 101
+ *                   COMPANY_NAME:
+ *                     type: string
+ *                     example: "Tech Corp"
+ *                   COMPANY_CITY:
+ *                     type: string
+ *                     example: "San Francisco"
+ */
 app.get('/companies', async (req, res) => {
     const conn = await pool.getConnection();
     const rows = await conn.query(
