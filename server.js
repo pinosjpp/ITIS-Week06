@@ -272,6 +272,76 @@ app.delete('/customers/:code', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /customers/{code}:
+ *   put:
+ *     summary: Update an existing customer
+ *     description: Update the details of a customer by their CUST_CODE.
+ *     parameters:
+ *       - in: path
+ *         name: code
+ *         required: true
+ *         description: The customer code (CUST_CODE)
+ *         schema:
+ *           type: string
+ *           example: C10001
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               CUST_NAME:
+ *                 type: string
+ *                 example: "Updated Corp"
+ *               CUST_CITY:
+ *                 type: string
+ *                 example: "New York"
+ *               WORKING_AREA:
+ *                 type: string
+ *                 example: "West"
+ *               CUST_COUNTRY:
+ *                 type: string
+ *                 example: "USA"
+ *     responses:
+ *       200:
+ *         description: Customer updated successfully
+ *       400:
+ *         description: Bad request (missing data)
+ *       404:
+ *         description: Customer not found
+ */
+app.put('/customers/:code', async (req, res) => {
+  const { code } = req.params;
+  const { CUST_NAME, CUST_CITY, WORKING_AREA, CUST_COUNTRY } = req.body;
+
+  if (!CUST_NAME) {
+    return res.status(400).json({ error: 'CUST_NAME is required' });
+  }
+
+  try {
+    const conn = await pool.getConnection();
+    const result = await conn.query(
+      `UPDATE customer
+       SET CUST_NAME = ?, CUST_CITY = ?, WORKING_AREA = ?, CUST_COUNTRY = ?
+       WHERE CUST_CODE = ?`,
+      [CUST_NAME, CUST_CITY || null, WORKING_AREA || null, CUST_COUNTRY || null, code]
+    );
+    conn.release();
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Customer not found' });
+    }
+
+    res.json({ message: 'Customer updated successfully', CUST_CODE: code });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`API listening at http://129.212.183.79:${port}/`);
