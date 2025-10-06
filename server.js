@@ -342,6 +342,12 @@ app.put('/customers/:code', async (req, res) => {
   }
 });
 
+app.get('/say', (req, res) => {
+  const keyword = req.query.keyword;
+  
+  res.json({ message: `Jake-Pinos says ${keyword}` });
+});
+
 
 app.listen(port, () => {
   console.log(`API listening at http://129.212.183.79:${port}/`);
